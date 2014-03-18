@@ -99,32 +99,32 @@ class SpeoOptions
         }
 
 		foreach( $possible_values as $value => $bool ) {
-			$xpath = new Domxpath($xmldoc);
-			$descs = $xpath->query('//tag[@name="' . $value . '"]/desc[@lang="en"]');
-			$titles = $xpath->query('//tag[@name="' . $value . '"]/desc[@lang="' . substr( $this_lang, 0, 2 ) . '"]');
+			// $xpath = new Domxpath($xmldoc);
+			// $descs = $xpath->query('//tag[@name="' . $value . '"]/desc[@lang="en"]');
+			// $titles = $xpath->query('//tag[@name="' . $value . '"]/desc[@lang="' . substr( $this_lang, 0, 2 ) . '"]');
 
-			foreach( $descs as $desc ) {
-				$i=1;
-				$opt_title = '<li>' . $value;
-				foreach( $titles as $title ) {
-					if( $i > 1 )
-						continue;
+			// foreach( $descs as $desc ) {
+				// $i=1;
+				// $opt_title = '<li>' . $value;
+				// foreach( $titles as $title ) {
+				// 	if( $i > 1 )
+				// 		continue;
 
-					$opt_title .= '<br />(' . $title->textContent . ')';
-					$i++;
-				}
-				$opt_title .= '</li>';
+				// 	$opt_title .= '<br />(' . $title->textContent . ')';
+				// 	$i++;
+				// }
+				// $opt_title .= '</li>';
 
 				//add the actual setting
 				add_settings_field(
 		            'speo_exif_' . $value, // ID
-		            $opt_title, // Title 
+		            $value, // Title 
 		            array( $this, 'speo_callback' ), // Callback
 		            'speo_exif_options', // Page
 		            'speo_options_all', // Section
 		            $value //args
 		        );
-			}
+			// }
 		}
     }
 

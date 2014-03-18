@@ -28,7 +28,7 @@ function speo_open() {
 add_action( 'init', 'speo_open' );
 
 //get the exif data for given image
-function speo_exif( $att_id ) {
+function speo_get_exif_image( $att_id ) {
 	global $exif;
 	//get the imagepath
 	$attachment = get_attached_file( $att_id );
@@ -51,10 +51,38 @@ function speo_exif( $att_id ) {
 		var_dump($result);
 	echo '</pre></code>';
 
-	error_log( 'test', 0, plugin_dir_path( __FILE__ ) . 'output.log' );
-
 	$exif->close();
 }
+
+//get the exif data for given image
+function speo_get_exif( $att_id ) {
+	global $exif;
+	$fields = get_option( 'speo_options' );
+
+	//get the imagepath
+	$attachment = get_attached_file( $att_id );
+	// $attachment = '/Users/alexgoller/SkyDrive/SecureWAMP_Portable/htdocs/speotyto/uploads';
+
+	$data = array(  ); 
+
+	foreach( $fields as $field => $value ) {
+		$data[] = '-' . $field;
+	}
+	array_push( $data, $attachment );
+
+	$exif->add( $data );
+	// $result = $exif->fetch();
+	$result = $exif->fetchAllDecoded();
+	$result = $result[0];
+
+	return $result;
+	
+	$exif->close();
+}
+
+/*
+	get possible values on plugin activation
+*/
 
 function speo_tags() {
 	global $exif;
@@ -65,6 +93,8 @@ function speo_tags() {
 	$file = fopen( plugin_dir_path( __FILE__ ) . 'list.xml','w' );
 	fwrite($file, $result[0]);
 	fclose($file);
+
+	$exif->close;
 }
 
 register_activation_hook( __FILE__, 'speo_tags' );
