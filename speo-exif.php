@@ -9,8 +9,6 @@ Author: alpipego
 Author URI: http://alpipego.com/
 */
 
-error_reporting(-1);
-
 //include the php exiftool
 include( 'ExifToolBatch.php' );
 
@@ -18,6 +16,9 @@ include( 'ExifToolBatch.php' );
 $path = plugin_dir_path( __FILE__ ) . 'Image-ExifTool-9.54/exiftool';
 $exif = new ExifToolBatch();
 $exif->setExifToolPath( $path );
+
+//include the options page
+include( 'speo-options.php' );
 
 //open connection
 function speo_open() {
@@ -33,16 +34,17 @@ function speo_exif( $att_id ) {
 	$attachment = get_attached_file( $att_id );
 	// $attachment = '/Users/alexgoller/SkyDrive/SecureWAMP_Portable/htdocs/speotyto/uploads';
 
-	$data = array( '-h', '-g', '-j', $attachment ); 
+	$data = array( '-h', '-j', '-common', $attachment ); 
 	$exif->add( $data );
 	// $result = $exif->fetch();
 	$result = $exif->fetchAllDecoded();
+	$result = $result[0];
 
-	foreach ($result[0] as $section => $value) {
+	foreach ($result as $section => $value) {
 		echo $section . '<br />';
 	}
 	echo '<code><pre>';
-		var_dump( $result[0]->EXIF );
+		var_dump( $result->EXIF );
 	echo '</pre></code>';
 
 	echo '<code><pre>';
@@ -53,3 +55,16 @@ function speo_exif( $att_id ) {
 
 	$exif->close();
 }
+
+function speo_tags() {
+	global $exif;
+    $tags = array( '-listx', '-EXIF:All' );
+	$exif->add( $tags );
+	$result = $exif->fetchAll();
+
+	$file = fopen( plugin_dir_path( __FILE__ ) . 'list.xml','w' );
+	fwrite($file, $result[0]);
+	fclose($file);
+}
+
+register_activation_hook( __FILE__, 'speo_tags' );
